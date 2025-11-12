@@ -159,6 +159,27 @@ router.post('/', idempotency, async (req: Request, res: Response) => {
     const paymentData = req.body;
     if (paymentData.paymentMethod) {
       paymentData.paymentMethod = transformPaymentMethod(paymentData.paymentMethod);
+      // Add channel_properties for EWALLET or CARD if redirects are provided
+      if ((paymentData.paymentMethod.type === 'EWALLET' || paymentData.paymentMethod.type === 'CARD') && paymentData.successRedirectUrl) {
+        const channelProps = {
+          success_return_url: paymentData.successRedirectUrl,
+          failure_return_url: paymentData.failureRedirectUrl,
+        };
+        if (paymentData.paymentMethod.type === 'EWALLET') {
+          paymentData.paymentMethod.ewallet.channel_properties = {
+            ...channelProps,
+            cancel_return_url: paymentData.failureRedirectUrl, // Use failure URL for cancel
+          };
+        } else if (paymentData.paymentMethod.type === 'CARD') {
+          paymentData.paymentMethod.card.channel_properties = channelProps;
+        }
+        // Remove top-level redirect URLs as they are not part of Xendit API
+        delete paymentData.successRedirectUrl;
+        delete paymentData.failureRedirectUrl;
+      }
+      // Rename to snake_case for Xendit
+      paymentData.payment_method = paymentData.paymentMethod;
+      delete paymentData.paymentMethod;
     }
     const payment = await createPaymentRequest({
       data: paymentData,
@@ -166,7 +187,7 @@ router.post('/', idempotency, async (req: Request, res: Response) => {
     logger.info('Payment created', { id: payment.id });
     res.json(payment);
   } catch (error) {
-    logger.error('Payment creation failed', { error });
+    logger.error('Payment creation failed', { message: (error as any).message, status: (error as any).status, xenditError: (error as any).response?.data });
     res.status(500).json({ error: 'Failed to create payment' });
   }
 });

@@ -26,6 +26,10 @@ export interface PaymentMethodOutput {
   };
   ewallet?: {
     channel_code: string;
+    channel_properties?: {
+      success_return_url?: string;
+      failure_return_url?: string;
+    };
   };
   card?: {
     channel_properties: {
@@ -72,6 +76,7 @@ export function transformPaymentMethod(input: PaymentMethodInput): PaymentMethod
         reusability: 'ONE_TIME_USE',
         ewallet: {
           channel_code: input.ewalletType,
+          channel_properties: {},
         },
       };
     case 'CARD':
