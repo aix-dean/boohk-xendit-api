@@ -1,0 +1,302 @@
+# Xendit API - Direct cURL Examples (Philippines)
+# Replace 'your-xendit-api-key' with your actual Xendit API key
+# These examples call Xendit API endpoints directly
+
+# =============================================================================
+# 1. PAYMENT REQUESTS
+# =============================================================================
+
+# Virtual Account Payment (BPI)
+curl -X POST https://api.xendit.co/payment_requests \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Basic $(echo -n 'xnd_development_zkYrBHAAjJpE1U9bVy0hgz50TviWnndQLmYipJqMpdlI9p2TIBW4PZ5ZoJGoH1' | base64)" \
+  -H "Idempotency-Key: va-bpi-001" \
+  -d '{
+    "amount": 1000,
+    "currency": "PHP",
+    "payment_method": {
+      "type": "VIRTUAL_ACCOUNT",
+      "reusability": "ONE_TIME_USE",
+      "virtual_account": {
+        "channel_code": "PH_BPI",
+        "channel_properties": {
+          "customer_name": "Juan Dela Cruz"
+        }
+      }
+    },
+    "description": "Payment for BPI Virtual Account"
+  }'
+
+# Virtual Account Payment (BDO)
+curl -X POST https://api.xendit.co/payment_requests \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Basic $(echo -n 'xnd_development_zkYrBHAAjJpE1U9bVy0hgz50TviWnndQLmYipJqMpdlI9p2TIBW4PZ5ZoJGoH1' | base64)" \
+  -H "Idempotency-Key: va-bdo-001" \
+  -d '{
+    "amount": 2500,
+    "currency": "PHP",
+    "payment_method": {
+      "type": "VIRTUAL_ACCOUNT",
+      "reusability": "ONE_TIME_USE",
+      "virtual_account": {
+        "channel_code": "PH_BDO",
+        "channel_properties": {
+          "customer_name": "Maria Santos"
+        }
+      }
+    },
+    "description": "Payment for BDO Virtual Account"
+  }'
+
+# E-Wallet Payment (GCash)
+curl -X POST https://api.xendit.co/payment_requests \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Basic $(echo -n 'xnd_development_zkYrBHAAjJpE1U9bVy0hgz50TviWnndQLmYipJqMpdlI9p2TIBW4PZ5ZoJGoH1' | base64)" \
+  -H "Idempotency-Key: ewallet-gcash-001" \
+  -d '{
+    "amount": 500,
+    "currency": "PHP",
+    "payment_method": {
+      "type": "EWALLET",
+      "reusability": "ONE_TIME_USE",
+      "ewallet": {
+        "channel_code": "GCASH",
+        "channel_properties": {
+          "success_return_url": "https://yourwebsite.com/success",
+          "failure_return_url": "https://yourwebsite.com/failure"
+        }
+      }
+    },
+    "description": "Payment via GCash"
+  }'
+
+# E-Wallet Payment (Maya)
+curl -X POST https://api.xendit.co/payment_requests \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Basic $(echo -n 'xnd_development_zkYrBHAAjJpE1U9bVy0hgz50TviWnndQLmYipJqMpdlI9p2TIBW4PZ5ZoJGoH1' | base64)" \
+  -H "Idempotency-Key: ewallet-maya-001" \
+  -d '{
+    "amount": 750,
+    "currency": "PHP",
+    "payment_method": {
+      "type": "EWALLET",
+      "reusability": "ONE_TIME_USE",
+      "ewallet": {
+        "channel_code": "PAYMAYA",
+        "channel_properties": {
+          "success_return_url": "https://yourwebsite.com/success",
+          "failure_return_url": "https://yourwebsite.com/failure",
+          "cancel_return_url": "https://yourwebsite.com/cancel"
+        }
+      }
+    },
+    "description": "Payment via Maya"
+  }'
+
+# Card Payment (Visa)
+curl -X POST https://api.xendit.co/payment_requests \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Basic $(echo -n 'xnd_development_zkYrBHAAjJpE1U9bVy0hgz50TviWnndQLmYipJqMpdlI9p2TIBW4PZ5ZoJGoH1' | base64)" \
+  -H "Idempotency-Key: card-visa-00134" \
+  -d '{
+    "amount": 5000,
+    "currency": "PHP",
+    "payment_method": {
+      "type": "CARD",
+      "reusability": "ONE_TIME_USE",
+      "card": {
+        "channel_properties": {
+          "success_return_url": "https://yourwebsite.com/success",,
+          "failure_return_url": "https://yourwebsite.com/failure"
+        },
+        "card_information": {
+          "card_number": "4111111111111111",
+          "expiry_month": "12",
+          "expiry_year": "2025",
+          "cvv": "123",
+          "cardholder_name": "Juan Dela Cruz"
+        }
+      }
+    },
+    "description": "Credit card payment",
+    "success_return_url": "https://yourwebsite.com/success",
+    "failure_return_url": "https://yourwebsite.com/failure"
+  }'
+
+# Direct Debit Payment (BPI)
+curl -X POST https://api.xendit.co/payment_requests \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Basic $(echo -n 'xnd_development_zkYrBHAAjJpE1U9bVy0hgz50TviWnndQLmYipJqMpdlI9p2TIBW4PZ5ZoJGoH1' | base64)" \
+  -H "Idempotency-Key: direct-debit-bpi-001" \
+  -d '{
+    "amount": 1500,
+    "currency": "PHP",
+    "payment_method": {
+      "type": "DIRECT_DEBIT",
+      "reusability": "ONE_TIME_USE",
+      "direct_debit": {
+        "channel_code": "BPI",
+        "account_number": "1234567890",
+        "channel_properties": {
+          "success_return_url": "https://yourwebsite.com/success",
+          "failure_return_url": "https://yourwebsite.com/failure"
+        }
+      }
+    },
+    "description": "Direct debit from BPI account"
+  }'
+
+# Get Payment Request Status
+curl -X GET "https://api.xendit.co/payment_requests/pr-12345678-1234-1234-1234-123456789012" \
+  -H "Authorization: Basic $(echo -n 'xnd_development_zkYrBHAAjJpE1U9bVy0hgz50TviWnndQLmYipJqMpdlI9p2TIBW4PZ5ZoJGoH1' | base64)"
+
+# =============================================================================
+# 2. INVOICES
+# =============================================================================
+
+# Create Invoice with Customer Object
+# Note: Use either 'customer' object OR 'customer_id', not both
+curl -X POST https://api.xendit.co/v2/invoices \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Basic $(echo -n 'xnd_development_zkYrBHAAjJpE1U9bVy0hgz50TviWnndQLmYipJqMpdlI9p2TIBW4PZ5ZoJGoH1' | base64)" \
+  -H "Idempotency-Key: invoice-001" \
+  -d '{
+    "amount": 2500,
+    "currency": "PHP",
+    "customer": {
+      "email": "customer@example.com",
+      "name": "Juan Dela Cruz"
+    },
+    "description": "Invoice for services",
+    "invoice_duration": 86400,
+    "items": [
+      {
+        "name": "Service Fee",
+        "quantity": 1,
+        "price": 2500
+      }
+    ]
+  }'
+
+# Create Invoice with Existing Customer ID
+curl -X POST https://api.xendit.co/v2/invoices \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Basic $(echo -n 'xnd_development_zkYrBHAAjJpE1U9bVy0hgz50TviWnndQLmYipJqMpdlI9p2TIBW4PZ5ZoJGoH1' | base64)" \
+  -H "Idempotency-Key: invoice-002" \
+  -d '{
+    "amount": 1500,
+    "currency": "PHP",
+    "customer_id": "cust-12345678-1234-1234-1234-123456789012",
+    "description": "Invoice for existing customer",
+    "invoice_duration": 86400,
+    "items": [
+      {
+        "name": "Consultation Fee",
+        "quantity": 1,
+        "price": 1500
+      }
+    ]
+  }'
+
+# Get Invoice
+curl -X GET "https://api.xendit.co/v2/invoices/inv-12345678-1234-1234-1234-123456789012" \
+  -H "Authorization: Basic $(echo -n 'xnd_development_zkYrBHAAjJpE1U9bVy0hgz50TviWnndQLmYipJqMpdlI9p2TIBW4PZ5ZoJGoH1' | base64)"
+
+# =============================================================================
+# 3. CUSTOMERS
+# =============================================================================
+
+# Create Customer
+curl -X POST https://api.xendit.co/customers \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Basic $(echo -n 'xnd_development_zkYrBHAAjJpE1U9bVy0hgz50TviWnndQLmYipJqMpdlI9p2TIBW4PZ5ZoJGoH1' | base64)" \
+  -d '{
+    "reference_id": "customer-001",
+    "email": "customer@example.com",
+    "mobile_number": "+639123456789",
+    "description": "Customer description"
+  }'
+
+# Get Customer
+curl -X GET "https://api.xendit.co/customers/cust-12345678-1234-1234-1234-123456789012" \
+  -H "Authorization: Basic $(echo -n 'xnd_development_zkYrBHAAjJpE1U9bVy0hgz50TviWnndQLmYipJqMpdlI9p2TIBW4PZ5ZoJGoH1' | base64)"
+
+# =============================================================================
+# 4. PAYOUTS
+# =============================================================================
+
+# Create Payout
+curl -X POST https://api.xendit.co/payouts \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Basic $(echo -n 'xnd_development_zkYrBHAAjJpE1U9bVy0hgz50TviWnndQLmYipJqMpdlI9p2TIBW4PZ5ZoJGoH1' | base64)" \
+  -H "Idempotency-Key: payout-001" \
+  -d '{
+    "amount": 2000,
+    "currency": "PHP",
+    "channel_code": "BPI",
+    "description": "Payout to BPI account",
+    "channel_properties": {
+      "account_holder_name": "Juan Dela Cruz",
+      "account_number": "1234567890"
+    }
+  }'
+
+# Get Payout
+curl -X GET "https://api.xendit.co/payouts/po-12345678-1234-1234-1234-123456789012" \
+  -H "Authorization: Basic $(echo -n 'xnd_development_zkYrBHAAjJpE1U9bVy0hgz50TviWnndQLmYipJqMpdlI9p2TIBW4PZ5ZoJGoH1' | base64)"
+
+# =============================================================================
+# 5. REFUNDS
+# =============================================================================
+
+# Create Refund
+curl -X POST https://api.xendit.co/refunds \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Basic $(echo -n 'xnd_development_zkYrBHAAjJpE1U9bVy0hgz50TviWnndQLmYipJqMpdlI9p2TIBW4PZ5ZoJGoH1' | base64)" \
+  -d '{
+    "payment_request_id": "pr-12345678-1234-1234-1234-123456789012",
+    "amount": 500,
+    "reason": "Customer request"
+  }'
+
+# Get Refund
+curl -X GET "https://api.xendit.co/refunds/rf-12345678-1234-1234-1234-123456789012" \
+  -H "Authorization: Basic $(echo -n 'xnd_development_zkYrBHAAjJpE1U9bVy0hgz50TviWnndQLmYipJqMpdlI9p2TIBW4PZ5ZoJGoH1' | base64)"
+
+# =============================================================================
+# PAYMENT METHOD REFERENCE (Philippines)
+# =============================================================================
+# Xendit API expects payment methods in this format:
+#
+# VIRTUAL_ACCOUNT:
+#   - type: "VIRTUAL_ACCOUNT"
+#   - reusability: "ONE_TIME_USE" | "MULTIPLE_USE"
+#   - virtual_account: { channel_code: "PH_BPI"|"PH_BDO"|"PH_UBP"|"PH_RCBC", channel_properties: { customer_name } }
+#
+# EWALLET:
+#   - type: "EWALLET"
+#   - reusability: "ONE_TIME_USE"
+#   - ewallet: { channel_code: "GCASH"|"PAYMAYA"|"GRABPAY"|"SHOPEEPAY", channel_properties: { success_return_url, failure_return_url[, cancel_return_url] } }
+#   - Note: PAYMAYA requires cancel_return_url in channel_properties
+#
+# CARD:
+#   - type: "CARD"
+#   - reusability: "ONE_TIME_USE"
+#   - card: { channel_properties: { success_return_url, failure_return_url }, card_information: { card_number, expiry_month, expiry_year, cvv, cardholder_name } }
+#   - success_return_url and failure_return_url are required at the top level for card payments
+#
+# DIRECT_DEBIT:
+#   - type: "DIRECT_DEBIT"
+#   - reusability: "ONE_TIME_USE"
+#   - direct_debit: { channel_code: "BPI"|"BDO", account_number, channel_properties: { success_return_url, failure_return_url } }
+#
+# QR_CODE/PAYLATER:
+#   - type: "QR_CODE" | "PAYLATER"
+#   - reusability: "ONE_TIME_USE"
+#
+# INVOICES:
+#   - Use either 'customer' object OR 'customer_id', not both
+#   - customer: { email, name } for new customers
+#   - customer_id: "cust-..." for existing customers
+#
+# All field names use snake_case as per Xendit API specifications.

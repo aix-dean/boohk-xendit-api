@@ -1,0 +1,762 @@
+Cards Object
+Card Object Example
+
+{
+    "currency": "IDR",
+    "channel_properties": {
+        "skip_three_d_secure": null,
+        "success_return_url": "https://redirect.me/goodstuff",
+        "failure_return_url": "https://redirect.me/badstuff",
+        "cardonfile_type": null
+    },
+    "card_information": {
+        "token_id": "651d1fa8e16b180017aab0f0",
+        "masked_card_number": "40000000XXXX1091",
+        "cardholder_name": "John Doe",
+        "expiry_month": "12",
+        "expiry_year": "2040",
+        "type": "CREDIT",
+        "network": "VISA",
+        "country": "ID",
+        "issuer": "BRI",
+        "fingerprint": "636a577b635d29001b94f2fe",
+        "cardholder_email": "johndoe@gmail.com",
+        "cardholder_phone_number": "628212223242526"
+    },
+    "card_verification_results": {
+        "address_verification_result": "MATCH",
+        "cvv_result": "MATCH",
+        "three_d_secure": {
+            "eci_code": "05",
+            "three_d_secure_flow": "CHALLENGE",
+            "three_d_secure_result": "AUTHENTICATED",
+            "three_d_secure_result_reason": null,
+            "three_d_secure_version": "2.1.0"
+        }
+    },
+    "card_data_id": null,
+    "is_cvn_submitted": null
+}
+Body Parameter	Type	Description
+currency
+required
+string	ISO 4217 three-letter code of the transaction's currency. Will be auto-filled based on the channel_code if not provided.
+Possible values:
+IDR
+PHP
+THB
+MYR
+VND
+USD
+channel_properties
+required
+object	Information provided specific to the channel partner that was provided during the request
+Key	Value
+skip_three_d_secure
+nullable
+boolean This field value is only configurable for reusability = MULTIPLE_USE to indicate whether to perform 3DS during the linking phase.
+Defaults to false
+success_return_url
+nullable
+string URL where the end-customer is redirected if the linking is successful.
+Required when skip_three_d_secure = false.
+This will be null if not applicable.
+failure_return_url
+nullable
+string URL where the end-customer is redirected if the linking has failed.
+Required when skip_three_d_secure = false.
+This will be null if not applicable.
+cardonfile_type
+nullable
+string Type of “credential-on-file” / “card-on-file” / COF payment for subsequent usage. Indicates future card-on-file usage.
+If you intend for a card to be used for future COF transactions, then this value must be included so that Xendit can inform the processors of this setup, and then after that on every transaction following the first transaction.
+Default: CUSTOMER_UNSCHEDULED
+Possible values:
+CUSTOMER_UNSCHEDULED - If you intend to use this Payment Method to perform future COF payments that do not follow a schedule.
+Example: simple “save card for future checkout” eCommerce flow, the future payments would always be CUSTOMER_UNSCHEDULED
+MERCHANT_UNSCHEDULED - If you intend to use this Payment Method to perform future COF payments initiated without customer interaction and do not follow a schedule
+Example: auto top-up payment flow
+RECURRING - If you intend to use this Payment Method to process a series of transactions at fixed, regular intervals.
+Example: Subscriptions
+
+Notes: In order to process MERCHANT_UNSCHEDULED and RECURRING card-on-file transaction types:
+Aggregator Merchant will need to be allowed to perform transaction without 3DS, please check this guide for self-serve or contact Xendit representative for enabling 3DS as optional
+Switcher Merchant with their own acquiring bank MID will need to have MID for non 3DS transactions and support recurring configured by the acquirer.
+card_information
+required
+object	Information pertaining to the actual card
+Key	Value
+token_id
+required
+string Corresponding token ID of the card
+masked_card_number
+required
+string Masked card number
+cardholder_name
+required
+string Cardholder's name. Issuer will use this information to assess the transaction.
+character: Alphanumeric. No special characters are allowed.
+cardholder_email
+required
+string Card holder's email address. Issuer will use this information to assess the transaction.
+cardholder_phone_number
+required
+string Card holder's phone number or mobile number. Issuer will use this information to assess the transaction.
+character: use +(country_code) as prefix. No - and/or blank space is allowed. Follow ITU-E.164 Standard
+expiry_month
+required
+string Card expiry month in MM format.
+expiry_year
+required
+number Card expiry year in YYYY format.
+type
+nullable
+string Type of card used.
+Possible values:
+CREDIT
+DEBIT
+network
+nullable
+string Card scheme of the card specified for tokenization.
+Possible values:
+VISA
+MASTERCARD
+JCB
+AMEX
+country
+nullable
+string 2-letter country code of the issuing country of the card
+issuer
+nullable
+string Name of the issuing entity of the card
+fingerprint
+nullable
+number Unique consistent identifier for the card. This does not change values over different authorizations.
+card_verification_results
+required
+object	For card transactions, this contains the results of various checks done such as 3DS, CVV, and AVS.
+Key	Value
+address_verification_result
+nullable
+string Only applicable for issuer banks that support address checks, generally works for issuer banks in the US, CA, or the UK
+Possible values:
+MATCHED
+NOT_MATCHED
+NOT_MATCHED_NAME
+PARTIAL_MATCH_ADDRESS
+PARTIAL_MATCH_ZIP
+PARTIAL_MATCH_NAME
+INVALID
+NOT_SUPPORTED
+NOT_AVAILABLE
+UNKNOWN_FROM_PROCESSOR
+cvv_result
+nullable
+string Indicates the result from verifying the Card Validation Value / Card Validation Code (CVV / CVC) when creating the Payment Method / token.
+Possible values:
+MATCHED
+NOT_MATCHED
+NOT_PROCESSED
+NOT_INCLUDED
+VALIDATION_FAILED
+SUSPICIOUS_TRANSACTION
+NOT_SUPPORTED
+UNKNOWN_FROM_PROCESSOR
+three_d_secure
+nullable
+object Only applicable for Payment Methods when 3DS is performed. Indicates the result of any 3DS transaction initiated when Payment Method creation is performed using 3DS.
+Key	Value
+three_d_secure_flow
+nullable
+string Whether the 3DS transaction went through a frictionless or challenge flow. Frictionless - no 2FA. Challenge - 2FA was required via OTP or other.
+Possible values:
+CHALLENGE
+FRICTIONLESS
+eci_code
+nullable
+string Electronic Commerce Indicator (ECI) is a number that indicates the level of security that was used when obtaining the customer’s payment credentials.An ECI is included as part of the authorization request for each transaction.
+Possible values:
+00 - Unable to authenticate (Mastercard)
+01 - Authentication attempted (Mastercard)
+02 - Successful authentication (Mastercard)
+05 - Successful authentication (Visa, AMEX, JCB)
+06 - Authentication attempted (Visa, AMEX, JCB)
+07 - Unable to authenticate (Visa, AMEX, JCB)
+three_d_secure_result
+nullable
+string Only applicable for Payment Methods when 3DS is performed. Indicates the result of any 3DS transaction initiated when Payment Method creation is performed using 3DS.
+Possible values:
+SUCCESSFUL [ECI 02 / 05]
+ATTEMPTED [ECI 01 / 06]
+FAILED [ECI 00 / 07]
+NOT_AVAILABLE [No ECI code being returned]
+PROCESSING_ERROR [No ECI code being returned]
+three_d_secure_result_reason
+nullable
+string Elaboration on the 3DS authentication result, where available
+Possible values:
+CARD_NOT_ENROLLED
+NETWORK_NOT_SUPPORTED
+ABANDONED
+CANCELED
+REJECTED
+BYPASSED
+PROCESSOR_ERROR
+three_d_secure_version
+nullable
+string Indicates the 3DS version.
+Possible values:
+null
+1.0.x
+2.1.x
+2.2.x
+
+card_data_id
+nullable
+string	Unique consistent identifier for the card. This does not change values over different authorizations.
+is_cvn_submitted
+nullable
+boolean	Whether CVN was provided as part of the tokenization step.
+Direct Debit Object
+Direct Debit Object Example
+
+{
+            "type": "BANK_ACCOUNT",
+            "debit_card": null,
+            "bank_account": {
+                "bank_account_hash": "ed9c7984efecd163b0ffc4d79240fb64477592bdcce6cc0f7dd43ee4018bc4c2",
+                "masked_bank_account_number": "XXXXXXX3213"
+            },
+            "channel_code": "BPI",
+            "channel_properties": {
+                "failure_return_url": "https://redirect.me/badstuff",
+                "success_return_url": "https://redirect.me/goodstuff"
+            }
+}
+
+Body Parameter	Type	Description
+channel_code
+required
+string	Identifier for the payment channel partner.
+Possible values:
+Indonesia
+BRI
+MANDIRI
+Philippines
+BPI
+BPI_RECURRING
+UBP
+UBP_EADA
+RCBC
+CHINABANK
+BDO_EPAY
+Thailand
+SCB
+KTB
+BBL
+BAY
+SCB_MB
+KTB_MB
+BBL_MB
+BAY_MB
+KBANK_MB
+Malaysia
+FPX Channels, listed here
+channel_properties
+required
+object	object Information provided specific to the channel partner that was provided during the request
+
+Key	Value
+success_return_url
+conditional
+string URL where the end-customer is redirected if the authorization is successful.
+This will be null if not applicable. This parameter is required for all channels except BRI.
+failure_return_url
+conditional
+string URL where the end-customer is redirected if the authorization has failed.
+This will be null if not applicable. This parameter is required for all channels except BRI.
+mobile_number
+conditional
+string Registered mobile number of the end-customer to the channel partner in E.164 Format. This parameter is required for BRI.
+This will be null if not applicable.
+card_last_four
+conditional
+string Last four digits of the debit card. This parameter is required for BRI.
+This will be null if not applicable.
+card_expiry
+nullable
+string Expiry month and year of the debit card (in MM/YY format).
+This will be null if not applicable.
+email
+nullable
+string Email address of the customer that is registered to the partner channel.
+This will be null if not applicable.
+identity_document_number
+nullable
+string The account holder's ID Card number or passport number. Required for BAY and KTB
+This will be null if not applicable.
+bank_account
+nullable
+object	object If direct_debit.type='BANK_ACCOUNT', this contains details regarding the underlying bank account of the payment method. This will be null otherwise.
+Key	Value
+masked_bank_account_number
+nullable
+string Masked account details as provided by the bank. This can be used for displaying a portion of the account number. This will be null if unavailable.
+bank_account_hash
+nullable
+string Unique hash for the specific account. This does not change across different authorizations or integrations. This will be null if unavailable.
+debit_card
+nullable
+object	object If direct_debit.type='DEBIT_CARD', this contains details regarding the debit card to be used for payments. This will be null otherwise.
+Key	Value
+mobile_number
+nullable
+string Registered mobile number of the end-customer to the channel partner in E.164 Format.
+This will be null if not applicable.
+card_last_four
+nullable
+string Last four digits of the debit card.
+This will be null if not applicable.
+card_expiry
+nullable
+string Expiry month and year of the debit card (in MM/YY format).
+This will be null if not applicable.
+email
+nullable
+string Email address of the customer that is registered to the partner channel.
+This will be null if not applicable.
+E-Wallets Object
+E-Wallets Object Example
+
+{
+            "account": {
+                "name": "John  Doe",
+                "balance": null,
+                "point_balance": null,
+                "account_details": "+62123456XXXX"
+            },
+            "channel_code": "OVO",
+            "channel_properties": {
+                "failure_return_url": "https://redirect.me/badstuff",
+                "success_return_url": "https://redirect.me/goodstuff"
+            }
+}
+Body Parameter	Type	Description
+channel_code
+required
+string	Identifier for the payment channel partner.
+Possible values:
+Indonesia
+DANA
+OVO
+LINKAJA
+ASTRAPAY
+JENIUSPAY
+SHOPEEPAY
+SAKUKU
+Philippines
+SHOPEEPAY
+GRABPAY
+PAYMAYA
+GCASH
+Vietnam
+APPOTA
+MOMO
+ZALOPAY
+VNPTWALLET
+SHOPEEPAY
+VIETTELPAY
+Thailand
+WECHATPAY
+LINEPAY
+SHOPEEPAY
+TRUEMONEY
+Malaysia
+TOUCHNGO
+SHOPEEPAY
+GRABPAY
+WECHATPAY
+channel_properties
+required
+object	Information provided specific to the channel partner that was provided during the request
+Key	Value
+success_return_url
+required
+string URL where the end-customer is redirected if the authorization is successful.
+This will be null if not applicable.
+failure_return_url
+required
+string URL where the end-customer is redirected if the authorization has failed.
+This will be null if not applicable.
+cancel_return_url
+nullable
+string URL where the end-customer is redirected if the authorization has been cancelled. End-customer can retry payment on the same link within 15 minutes. Only supported by PAYMAYA
+This will be null if not applicable.
+pending_return_url
+nullable
+string URL where the end-customer is redirected if the authorization is pending.
+This will be null if not applicable.
+Required for WECHATPAY (MY) and device_type is set to MOBILE.
+mobile_number
+nullable
+string Registered mobile number of the end-customer to the channel partner in E.164 Format.
+This will be null if not applicable.
+device_type
+nullable
+string determines the device type of the end user. Accepts the following values:
+DESKTOP
+MOBILE
+Only supported by WECHATPAY (MY) and defaults to DESKTOP if not provided.
+payer_ip_address
+nullable
+string The IP address of the end user's client (e.g. 192.168.0.1)
+Only supported by WECHATPAY (MY)
+Required if device_type is set to MOBILE
+allowed_payment_options
+optional
+Array of enums specific for GRABPAY (MY)
+PAYLATER_POSTPAID - Pay next month
+PAYLATER_INSTALLMENTS_4MO - Pay with 4 month installments
+PAYLATER_INSTALLMENTS_8MO - Pay with 8 month installments
+PAYLATER_INSTALLMENTS_12MO - Pay with 12 month installments
+
+Usage for each checkout_method:
+ONE_TIME_PAYMENT - Choose which payment option to show, default will show all. To hide all payment options, use empty Array []. Important notes:
+The Ewallat balance option will always be visible.
+When using PAYLATER_INSTALLMENTS_4MO or any installment options, it will show all available installment options. It is not possible to hide/show individual installment options, e.g. show 8 month installment only. This is by design in Grab payment UI. To know what mode the customer ends up using, please refer to our payment webhook.
+
+TOKENIZED_PAYMENT - Choose One payment option to use, default will use GrabPay Ewallet balance
+account
+nullable
+object	Object that contains information of the linked eWallet account. Will be null if information is not available.
+Key	Value
+account_details
+nullable
+string Masked public identifier for the eWallet account. This typically contains the masked mobile number registered to the eWallet account. This will be null if unavailable.
+name
+nullable
+string Name of the eWallet account holder. This will be null if unavailable.
+balance
+nullable
+number Current available balance in the eWallet. This will be null if unavailable.
+point_balance
+nullable
+number Current available points in the eWallet for consumption. This will be null if unavailable.
+Retail Outlet (OTC) Object
+Over-the-counter Object Example
+
+ {
+            "amount": 10000,
+            "currency": "IDR",
+            "channel_code": "INDOMARET",
+            "channel_properties": {
+                "payment_code": "TESTABCD1234",
+                "customer_name": "John Doe",
+                "expires_at": "2023-06-22T04:40:51Z"
+            }
+        }
+Body Parameter	Type	Description
+channel_code
+required
+string	Identifier for the payment channel partner
+Possible values:
+Indonesia
+ALFAMART
+INDOMARET
+Philippines
+7ELEVEN
+7ELEVEN_CLIQQ
+CEBUANA
+ECPAY
+PALAWAN
+MLHUILLIER
+ECPAY_DRAGONLOAN
+SM_BILLS
+ROBINSONS_BILLS
+
+currency
+required
+string	ISO 4217 three-letter code of the transaction's currency. Will be auto-filled based on the channel_code if not provided.
+Possible values:
+IDR
+PHP
+amount
+nullable
+number	Expected and accepted amount of the transaction in the actual value in the provided currency.
+Decimal places support varies per currency:
+IDR - Only supports positive integers.
+PHP - Supports up to two decimal places.
+
+If amount is not provided, the corresponding payment code will accept any amount as payment (open amount).
+channel_properties
+required
+object	Information provided specific to the channel partner that was provided during the request
+Key	Value
+customer_name
+required
+string Complete name of the payor. May be used by the channel partner to verify their identity. Must contain letters and space only.
+payment_code
+nullable
+string The corresponding payment code to be given to the Customer to be presented at OTC partner channels.
+expires_at
+required
+string Timestamp in ISO 8601 UTC+0 for when the payment code will be valid.
+QR Object
+QR Object Example
+
+ {
+            "amount": 15000,
+            "channel_code": "DANA",
+            "channel_properties": {
+                "expires_at": "2023-06-02T07:17:32.34039Z",
+                "qr_string": "some-random-qr-string"
+            },
+            "currency": "IDR"
+}
+Body Parameter	Type	Description
+channel_code
+conditional
+string	Identifier for the QR Code standard used. This parameter is not required for Indonesia channel code.
+Possible values:
+Indonesia
+DANA
+LINKAJA
+Thailand
+PROMPTPAY
+
+Philippines
+QRPH
+
+currency
+required
+string	ISO 4217 three-letter code of the transaction's currency. Will be auto-filled based on the channel_code if not provided.
+Possible values:
+IDR
+VND
+THB
+PHP
+amount
+nullable
+number	Expected and accepted amount of the transaction in the actual value in the provided currency.
+Decimal places support varies per currency:
+IDR - Only supports positive integers.
+VND - Only supports positive integers.
+THB - Supports up to two decimal places.
+PHP - Supports up to two decimal places.
+
+If amount is not provided, the corresponding QR will accept any amount as payment (open amount). Open amount QR is not supported for QRPH at the moment.
+channel_properties
+required
+object	Information regarding the payment method / instrument
+Key	Value
+qr_string
+required
+string QR string to be rendered for display to end users.
+
+Virtual Account Object
+Virtual Account Object Example
+
+ {
+            "amount": 100000,
+            "channel_code": "BRI",
+            "channel_properties": {
+                "customer_name": "John Doe",
+                "expires_at": "2054-05-24T17:00:00Z",
+                "virtual_account_number": "920019999095203"
+            },
+            "currency": "IDR",
+            "alternative_displays": [
+              {
+                "type": "QR_STRING",
+                "data": "SAMPLE_QR_DATA"
+              }
+            ]
+}
+Body Parameter	Type	Description
+channel_code
+required
+string	Identifier for the payment channel partner
+Possible values:
+Indonesia
+BCA
+BSI
+BJB
+CIMB
+SAHABAT_SAMPOERNA
+ARTAJASA
+BRI
+BNI
+MANDIRI
+PERMATA
+Vietnam
+PV
+VIETCAPITAL
+WOORI
+MSB
+VPB
+BIDV
+Thailand
+STANDARD_CHARTERED
+Malaysia
+UOB
+AMBANK
+currency
+required
+string	ISO 4217 three-letter code of the transaction's currency. Will be auto-filled based on the channel_code if not provided.
+Possible values:
+IDR
+VND
+THB
+MYR
+amount
+nullable
+number	Expected and accepted amount of the transaction in the actual value in the provided currency.
+Decimal places support varies per currency:
+IDR - Only supports positive integers.
+VND - Only supports positive integers.
+THB - Supports up to two decimal places.
+MYR - Supports up to two decimal places.
+
+If amount is not provided, the corresponding virtual account will accept any amount as payment (open amount).
+channel_properties
+required
+object	Information provided specific to the channel partner that was provided during the request
+
+Key	Value
+customer_name
+required
+string Complete name of the payor. May be used by the channel partner to verify their identity.
+virtual_account_number
+string The corresponding virtual account number that can be used by Customers to send payments to.
+
+Note: This value is ignored for Vietnam and Thailand virtual accounts.
+expires_at
+required
+string Timestamp in ISO 8601 UTC+0 for when the virtual account will be valid.
+suggested_amount
+nullable
+string Provided suggested amount to be paid. Will be visible to the Customer on supported channels.
+alternative_display_types
+nullable
+array of strings	Alternative display type for the virtual account.
+
+Note:This value is currently only applicable to Vietnam virtual accounts.
+
+Accepted values:
+QR_STRING
+alternative_displays
+nullable
+array of object	Alternative displays for the virtual account based on alternative_display_types value during request.
+
+Note:This value is currently only applicable to Vietnam virtual accounts.
+
+Contains an array with the following data:
+Key	Value
+type
+required
+string The type of alternative display
+data
+required
+string The data for the alternative display
+
+Note: For QR_STRING, please use this data to generate a VietQR QR Code.
+Refund Object
+The Refund Object represents a request to have a certain amount to be refunded from a succeeded payment.
+
+Refund Object Example
+
+{
+    "id": "rfd-69e77490-d2cc-4bf3-8319-e064e121db93",
+    "payment_id": "pr-d5fe8554-fbcd-42b3-956d-867376550ed9",
+    "invoice_id": "",
+    "amount": 3000,
+    "payment_method_type": "CARD",
+    "channel_code": "",
+    "currency": "PHP",
+    "status": "SUCCEEDED",
+    "reason": "CANCELLATION",
+    "reference_id": "9d9c04a9-55c8-4eea-8b09-4109ac10b7f0",
+    "failure_code": null,
+    "refund_fee_amount": null,
+    "created": "2022-09-29T03:37:07.06648896Z",
+    "updated": "2022-09-29T03:37:07.06648906Z",
+    "metadata": null
+}
+Body Parameter	Type	Description
+id
+required
+string	Unique identifier for the refund request. It will have the prefix rfd-.
+payment_id
+required
+string	Identifier for the corresponding Payment that is being refunded
+invoice_id
+nullable
+string	If the refund request was made using the ID for a Invoice/Checkout/Payment Link, this is the corresponding identifier for it.
+payment_method_type
+required
+string	Type of the payment method used in the original payment.
+Possible values:
+CARD
+EWALLET
+DIRECT_DEBIT
+
+reference_id
+nullable
+string	Identifier provided by the merchant for the refund request. This may be automatically generated by Xendit if it was not provided.
+Maximum length: 255 characters
+amount
+required
+string	Amount of the transaction reflecting the actual decimal places. (Ex. 1234.56 with currency PHP is one thousand thirty-four pesos and fifty-six centavos)
+Decimal places support varies per currency:
+IDR - Only supports whole numbers (can't support decimal number).
+VND - Only supports whole numbers (can't support decimal number).
+PHP - Supports up to two decimal places.
+MYR - Supports up to two decimal places.
+THB - Supports up to two decimal places.
+currency
+required
+string	Three-letter ISO 4217 currency code of the transaction, in uppercase.
+status
+required
+string	Status of the refund.
+
+Possible values:
+REQUIRES_ACTION - The request passed validation but requires additional steps in order to activate the payment method for use. Typical actions are for merchant to trigger OTP validation or redirect your customer to authentication page.
+SUCCEEDED
+FAILED
+PENDING
+CANCELLED
+
+country
+required
+string	2-letter ISO 3166-2 country code indicating country of transaction. This is also be used as indicator for channels that are present in multiple markets (e.g. SHOPEEPAY).
+channel_code
+required
+string	Identifier for the payment channel partner
+
+reason
+required
+string	Provided reason why the refund was requested.
+Possible values:
+FRAUDULENT
+DUPLICATE
+REQUESTED_BY_CUSTOMER
+CANCELLATION
+OTHERS
+failure_code
+nullable
+string	If the status of the refund is FAILED, this describes the reason for failure.
+Will be null if the refund did not fail.
+See possible codes here.
+refund_fee_amount
+nullable
+number	(if applicable) This will be the corresponding additional fee for processing the refund.
+created
+required
+string	ISO 8601 Timestamp for refund object creation. Timezone UTC+0
+updated
+required
+string	ISO 8601 Timestamp for latest refund object update. Timezone UTC+0
+metadata
+nullable
+object	User defined object with JSON properties and values passed in during Refund creation.
