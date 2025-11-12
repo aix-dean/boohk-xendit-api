@@ -295,3 +295,4 @@
 {"ip":"::1","level":"info","message":"POST /api/payments","service":"boohk-xendit-api","timestamp":"2025-11-12T16:50:31.589Z","userAgent":"curl/8.7.1"}
 {"ip":"::1","level":"info","message":"POST /api/payments","service":"boohk-xendit-api","timestamp":"2025-11-12T16:50:38.782Z","userAgent":"curl/8.7.1"}
 {"level":"error","message":"Payment creation failed Request failed with status code 403","service":"boohk-xendit-api","status":403,"timestamp":"2025-11-12T16:50:39.470Z","xenditError":{"error_code":"UNAUTHORIZED","message":"Business cannot perform credit card transactions because transaction using pan is blocked"}}
+{"level":"info","message":"Server running on port 3000","service":"boohk-xendit-api","timestamp":"2025-11-12T16:53:02.539Z"}
