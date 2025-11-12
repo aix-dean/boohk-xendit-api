@@ -36,9 +36,9 @@ const router = (0, express_1.Router)();
  *                 example: 10000
  *               currency:
  *                 type: string
- *                 enum: [IDR, USD, PHP, SGD, MYR]
+ *                 enum: [PHP, IDR, USD, SGD, MYR]
  *                 description: Currency code
- *                 example: "IDR"
+ *                 example: "PHP"
  *               customer:
  *                 type: object
  *                 required:

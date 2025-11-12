@@ -39,7 +39,7 @@ curl -X POST https://api.xendit.co/payment_requests \
       "type": "VIRTUAL_ACCOUNT",
       "reusability": "ONE_TIME_USE",
       "virtual_account": {
-        "channel_code": "PH_BDO",
+        "channel_code": "BDO",
         "channel_properties": {
           "customer_name": "Maria Santos"
         }
@@ -97,7 +97,7 @@ curl -X POST https://api.xendit.co/payment_requests \
 curl -X POST https://api.xendit.co/payment_requests \
   -H "Content-Type: application/json" \
   -H "Authorization: Basic $(echo -n 'xnd_development_zkYrBHAAjJpE1U9bVy0hgz50TviWnndQLmYipJqMpdlI9p2TIBW4PZ5ZoJGoH1' | base64)" \
-  -H "Idempotency-Key: card-visa-00134" \
+  -H "Idempotency-Key: card-visa-0011" \
   -d '{
     "amount": 5000,
     "currency": "PHP",
@@ -106,13 +106,14 @@ curl -X POST https://api.xendit.co/payment_requests \
       "reusability": "ONE_TIME_USE",
       "card": {
         "channel_properties": {
-          "success_return_url": "https://yourwebsite.com/success",,
-          "failure_return_url": "https://yourwebsite.com/failure"
+          "success_return_url": "https://yourwebsite.com/success",
+          "failure_return_url": "https://yourwebsite.com/failure",
+          "cancel_return_url": "https://yourwebsite.com/cancel"
         },
         "card_information": {
-          "card_number": "4111111111111111",
+          "card_number": "3337000000000008",
           "expiry_month": "12",
-          "expiry_year": "2025",
+          "expiry_year": "2026",
           "cvv": "123",
           "cardholder_name": "Juan Dela Cruz"
         }
@@ -154,8 +155,7 @@ curl -X GET "https://api.xendit.co/payment_requests/pr-12345678-1234-1234-1234-1
 # 2. INVOICES
 # =============================================================================
 
-# Create Invoice with Customer Object
-# Note: Use either 'customer' object OR 'customer_id', not both
+# Create Invoice
 curl -X POST https://api.xendit.co/v2/invoices \
   -H "Content-Type: application/json" \
   -H "Authorization: Basic $(echo -n 'xnd_development_zkYrBHAAjJpE1U9bVy0hgz50TviWnndQLmYipJqMpdlI9p2TIBW4PZ5ZoJGoH1' | base64)" \
@@ -174,26 +174,6 @@ curl -X POST https://api.xendit.co/v2/invoices \
         "name": "Service Fee",
         "quantity": 1,
         "price": 2500
-      }
-    ]
-  }'
-
-# Create Invoice with Existing Customer ID
-curl -X POST https://api.xendit.co/v2/invoices \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Basic $(echo -n 'xnd_development_zkYrBHAAjJpE1U9bVy0hgz50TviWnndQLmYipJqMpdlI9p2TIBW4PZ5ZoJGoH1' | base64)" \
-  -H "Idempotency-Key: invoice-002" \
-  -d '{
-    "amount": 1500,
-    "currency": "PHP",
-    "customer_id": "cust-12345678-1234-1234-1234-123456789012",
-    "description": "Invoice for existing customer",
-    "invoice_duration": 86400,
-    "items": [
-      {
-        "name": "Consultation Fee",
-        "quantity": 1,
-        "price": 1500
       }
     ]
   }'
@@ -271,7 +251,7 @@ curl -X GET "https://api.xendit.co/refunds/rf-12345678-1234-1234-1234-1234567890
 # VIRTUAL_ACCOUNT:
 #   - type: "VIRTUAL_ACCOUNT"
 #   - reusability: "ONE_TIME_USE" | "MULTIPLE_USE"
-#   - virtual_account: { channel_code: "PH_BPI"|"PH_BDO"|"PH_UBP"|"PH_RCBC", channel_properties: { customer_name } }
+#   - virtual_account: { channel_code: "BPI"|"BDO"|"UBP"|"RCBC", channel_properties: { customer_name } }
 #
 # EWALLET:
 #   - type: "EWALLET"
@@ -293,10 +273,5 @@ curl -X GET "https://api.xendit.co/refunds/rf-12345678-1234-1234-1234-1234567890
 # QR_CODE/PAYLATER:
 #   - type: "QR_CODE" | "PAYLATER"
 #   - reusability: "ONE_TIME_USE"
-#
-# INVOICES:
-#   - Use either 'customer' object OR 'customer_id', not both
-#   - customer: { email, name } for new customers
-#   - customer_id: "cust-..." for existing customers
 #
 # All field names use snake_case as per Xendit API specifications.

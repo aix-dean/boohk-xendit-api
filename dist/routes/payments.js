@@ -29,7 +29,7 @@ const router = (0, express_1.Router)();
  *             required:
  *               - amount
  *               - currency
- *               - paymentMethod
+ *               - payment_method
  *             properties:
  *               amount:
  *                 type: number
@@ -37,12 +37,12 @@ const router = (0, express_1.Router)();
  *                 example: 10000
  *               currency:
  *                 type: string
- *                 enum: [IDR, USD, PHP, SGD, MYR]
+ *                 enum: [PHP, IDR, USD, SGD, MYR]
  *                 description: Currency code
- *                 example: "IDR"
- *               paymentMethod:
+ *                 example: "PHP"
+ *               payment_method:
  *                 type: object
- *                 description: Simplified payment method details (transformed internally)
+ *                 description: Payment method details in Xendit API format
  *                 properties:
  *                   type:
  *                     type: string
@@ -52,13 +52,13 @@ const router = (0, express_1.Router)();
  *                   bankCode:
  *                     type: string
  *                     description: Bank code for virtual account or direct debit
- *                     example: "BCA"
+ *                     example: "PH_BPI"
  *                   accountNumber:
  *                     type: string
  *                     description: Account number for direct debit
  *                   ewalletType:
  *                     type: string
- *                     enum: [DANA, OVO, LINKAJA, GOPAY, SHOPEEPAY]
+ *                     enum: [GCASH, PAYMAYA, GRABPAY, SHOPEEPAY]
  *                     description: E-wallet type
  *                   reusability:
  *                     type: string
@@ -202,7 +202,7 @@ router.post('/', idempotency_1.idempotency, async (req, res) => {
  *                   type: string
  *                 status:
  *                   type: string
- *                 paymentMethod:
+ *                 payment_method:
  *                   type: object
  *                 customer:
  *                   type: object
