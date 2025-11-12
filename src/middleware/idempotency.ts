@@ -16,8 +16,7 @@ export const idempotency = (req: Request, res: Response, next: NextFunction) => 
   }
 
   if (cache.has(key)) {
-    const cached = cache.get(key)!;
-    res.status(cached.status).json(cached.body);
+    res.status(409).json({ error: 'Duplicate request with the same Idempotency-Key' });
     return;
   }
 
@@ -46,15 +45,13 @@ export const idempotency = (req: Request, res: Response, next: NextFunction) => 
 
   // After response is sent, cache it
   res.on('finish', () => {
-    if (responseStatus < 400) { // Only cache successful responses
-      cache.set(key, {
-        status: responseStatus,
-        body: responseBody,
-        headers: {},
-      });
-      // Expire after 24 hours
-      setTimeout(() => cache.delete(key), 24 * 60 * 60 * 1000);
-    }
+    cache.set(key, {
+      status: responseStatus,
+      body: responseBody,
+      headers: {},
+    });
+    // Expire after 24 hours
+    setTimeout(() => cache.delete(key), 24 * 60 * 60 * 1000);
   });
 
   next();
